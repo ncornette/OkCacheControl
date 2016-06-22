@@ -2,6 +2,19 @@
 Helper class to configure cache behaviour of OkHttp client, also works 
 with Retrofit for Android.
 
+```groovy
+allprojects {
+    repositories {
+        maven {
+            url  "http://dl.bintray.com/ncornette/maven"
+...
+
+dependencies {
+    compile 'com.ncornette.cache:okcache-control:1.0.0'
+...
+
+```
+
 ## Usage
 
 Initialize `OkCacheControl` with *OkHttpClient.Builder()*, then you can 
@@ -15,7 +28,7 @@ call 3 methods :
   okClient = OkCacheControl.on(new OkHttpClient.Builder())
           .overrideServerCachePolicy(30, MINUTES)
           .forceCacheWhenOffline(networkMonitor)
-          .apply() // returns the OkHttpClient.Builder instance
+          .apply() // return to the OkHttpClient.Builder instance
           .cache(cache)
           .build();
 
@@ -45,10 +58,6 @@ without `Cache-Control` header, cache is used until expiration, then network.
 only when offline.
 
 - add `Cache-Control: no-store` to not store response in cache.
-
-## Installation
-
-WIP : build.gradle configuration in progress
 
 ## License
 
