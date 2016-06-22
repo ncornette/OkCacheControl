@@ -27,14 +27,18 @@ publishing {
 }
 
 bintray {
+    dryRun = false
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
     publications = ['mavenJava']
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = "${POM_ARTIFACTID}"
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/ncornette/OkCacheControl.git'
+        version {
+            name= "${POM_VERSION}"
+        }
     }
 }
 
