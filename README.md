@@ -2,27 +2,20 @@
 Helper class to configure cache behaviour of OkHttp client, also works 
 with Retrofit for Android.
 
+Release version is available on jcenter: 
 ```groovy
-allprojects {
-    repositories {
-        maven {
-            url  "http://dl.bintray.com/ncornette/maven"
-...
-
 dependencies {
     compile 'com.ncornette.cache:okcache-control:1.0.0'
 ...
-
 ```
 
 ## Usage
 
 Initialize `OkCacheControl` with *OkHttpClient.Builder()*, then you can 
-call 3 methods : 
+call 2 extra methods : 
 
  - `overrideServerCachePolicy(MaxAgeControl)`
  - `forceCacheWhenOffline(NetworkMonitor)` 
- - `apply()`
 
 ```java
   okClient = OkCacheControl.on(new OkHttpClient.Builder())
