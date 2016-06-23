@@ -79,7 +79,7 @@ public class OkCacheControlTest {
         when(maxAgeControl.getMaxAge()).thenReturn(maxAgeUnit.toSeconds(maxAge));
 
         mockWebServer.enqueue(new MockResponse().setBody(responseBody));
-        Response response = getResult();
+        Response response = getResponse();
 
         assertThat(cache.networkCount()).isEqualTo(1);
         assertThat(cache.hitCount()).isEqualTo(0);
@@ -95,27 +95,27 @@ public class OkCacheControlTest {
 
         //when
         mockWebServer.enqueue(new MockResponse().setBody("Network Response"));
-        Response response = getResult();
+        Response response = getResponse();
 
         //then
         then(response.body().string()).isEqualTo("Cached Response");
         then(cache.hitCount()).isEqualTo(1);
     }
 
-    private Response getResult() throws IOException {
+    private Response getResponse() throws IOException {
         return client.newCall(new Request.Builder()
                 .url(mockWebServer.url("/"))
                 .build()).execute();
     }
 
-    private Response getResultFromNetwork() throws IOException {
+    private Response getResponseFromNetwork() throws IOException {
         return client.newCall(new Request.Builder()
                 .url(mockWebServer.url("/"))
                 .header("Cache-Control", "no-cache")
                 .build()).execute();
     }
 
-    private Response getResultNoStore() throws IOException {
+    private Response getResponseNoStore() throws IOException {
         return client.newCall(new Request.Builder()
                 .url(mockWebServer.url("/"))
                 .header("Cache-Control", "no-store")
@@ -131,7 +131,7 @@ public class OkCacheControlTest {
         //when
         //force network response
         mockWebServer.enqueue(new MockResponse().setBody("Network Response"));
-        Response response = getResultFromNetwork();
+        Response response = getResponseFromNetwork();
 
         //then
         then(response.body().string()).isEqualTo("Network Response");
@@ -146,7 +146,7 @@ public class OkCacheControlTest {
 
         //when
         mockWebServer.enqueue(new MockResponse().setBody("Network Response"));
-        Response response = getResult();
+        Response response = getResponse();
 
         //then
         then(response.body().string()).isEqualTo("Network Response");
@@ -160,7 +160,7 @@ public class OkCacheControlTest {
 
         //when
         mockWebServer.enqueue(new MockResponse().setBody("Network Response"));
-        Response response = getResultNoStore();
+        Response response = getResponseNoStore();
 
         //then
         then(response.body().string()).isEqualTo("Network Response");
@@ -175,7 +175,7 @@ public class OkCacheControlTest {
 
         //when
         mockWebServer.enqueue(new MockResponse().setResponseCode(404));
-        Response response = getResult();
+        Response response = getResponse();
 
         //then
         then(response.body().string()).isEqualTo("Expired Response");
@@ -191,7 +191,7 @@ public class OkCacheControlTest {
         //when
         //force network response
         mockWebServer.enqueue(new MockResponse().setResponseCode(404));
-        Response response = getResultFromNetwork();
+        Response response = getResponseFromNetwork();
 
         //then
         then(response.body().string()).isEqualTo("Expired Response");
@@ -205,7 +205,7 @@ public class OkCacheControlTest {
 
         //when
         mockWebServer.enqueue(new MockResponse().setResponseCode(404));
-        Response response = getResult();
+        Response response = getResponse();
 
         //then
         then(response.body().string()).isEmpty();
