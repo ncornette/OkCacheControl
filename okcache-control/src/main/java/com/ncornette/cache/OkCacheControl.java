@@ -44,124 +44,122 @@ public class OkCacheControl {
         long getMaxAge();
     }
 
-    public static Builder on(OkHttpClient.Builder okBuilder) {
-        Builder builder = new Builder(okBuilder);
+    public static OkCacheControl on(OkHttpClient.Builder okBuilder) {
+        OkCacheControl builder = new OkCacheControl(okBuilder);
         return builder;
     }
 
 
-    public static class Builder {
-        private NetworkMonitor networkMonitor;
-        private long maxAgeValue;
-        private TimeUnit maxAgeUnit;
-        private OkHttpClient.Builder okBuilder;
-        private MaxAgeControl maxAgeControl;
+    private NetworkMonitor networkMonitor;
+    private long maxAgeValue;
+    private TimeUnit maxAgeUnit;
+    private OkHttpClient.Builder okBuilder;
+    private MaxAgeControl maxAgeControl;
 
-        private Builder(OkHttpClient.Builder okBuilder) {
-            this.okBuilder = okBuilder;
-        }
+    private OkCacheControl(OkHttpClient.Builder okBuilder) {
+        this.okBuilder = okBuilder;
+    }
 
-        public Builder overrideServerCachePolicy(long timeValue, TimeUnit unit) {
-            this.maxAgeControl = null;
-            this.maxAgeValue = timeValue;
-            this.maxAgeUnit = unit;
-            return this;
-        }
+    public OkCacheControl overrideServerCachePolicy(long timeValue, TimeUnit unit) {
+        this.maxAgeControl = null;
+        this.maxAgeValue = timeValue;
+        this.maxAgeUnit = unit;
+        return this;
+    }
 
-        public Builder overrideServerCachePolicy(MaxAgeControl maxAgeControl) {
-            this.maxAgeUnit = null;
-            this.maxAgeControl = maxAgeControl;
-            return this;
-        }
+    public OkCacheControl overrideServerCachePolicy(MaxAgeControl maxAgeControl) {
+        this.maxAgeUnit = null;
+        this.maxAgeControl = maxAgeControl;
+        return this;
+    }
 
-        public Builder forceCacheWhenOffline(NetworkMonitor networkMonitor) {
-            this.networkMonitor = networkMonitor;
-            return this;
-        }
+    public OkCacheControl forceCacheWhenOffline(NetworkMonitor networkMonitor) {
+        this.networkMonitor = networkMonitor;
+        return this;
+    }
 
-        public OkHttpClient.Builder apply() {
-            if (networkMonitor == null && maxAgeUnit == null && maxAgeControl == null) {
-                return okBuilder;
-            }
-
-            if (maxAgeUnit != null) {
-                maxAgeControl = new StaticMaxAgeControl(maxAgeValue, maxAgeUnit);
-            }
-
-            ResponseHandler responseHandler;
-            if (maxAgeControl != null) {
-                responseHandler = new CachePolicyResponseHandler(maxAgeControl);
-            } else {
-                responseHandler = new ResponseHandler();
-            }
-
-            RequestHandler requestHandler;
-            if (networkMonitor != null) {
-                requestHandler = new NetworkMonitorRequestHandler(networkMonitor);
-            } else {
-                requestHandler = new RequestHandler();
-            }
-
-            Interceptor cacheControlInterceptor = getCacheControlInterceptor(
-                    requestHandler, responseHandler);
-
-            okBuilder.addNetworkInterceptor(cacheControlInterceptor);
-
-            if (networkMonitor != null) {
-                okBuilder.addInterceptor(cacheControlInterceptor);
-            }
-
+    public OkHttpClient.Builder apply() {
+        if (networkMonitor == null && maxAgeUnit == null && maxAgeControl == null) {
             return okBuilder;
         }
 
-        private static class StaticMaxAgeControl implements MaxAgeControl {
-            private TimeUnit maxAgeUnit;
-            private long maxAgeValue;
-
-            private StaticMaxAgeControl(long maxAgeValue, TimeUnit maxAgeUnit) {
-                this.maxAgeUnit = maxAgeUnit;
-                this.maxAgeValue = maxAgeValue;
-            }
-
-            @Override
-            public long getMaxAge() {
-                return maxAgeUnit.toSeconds(maxAgeValue);
-            }
+        if (maxAgeUnit != null) {
+            maxAgeControl = new StaticMaxAgeControl(maxAgeValue, maxAgeUnit);
         }
 
-        private static class CachePolicyResponseHandler extends ResponseHandler {
-            private MaxAgeControl maxAgeControl;
-
-            private CachePolicyResponseHandler(MaxAgeControl maxAgeControl) {
-                this.maxAgeControl = maxAgeControl;
-            }
-
-            @Override
-            public Response newResponse(Response response) {
-                return response.newBuilder()
-                        .removeHeader("Pragma")
-                        .removeHeader("Cache-Control")
-                        .header("Cache-Control", "max-age=" + maxAgeControl.getMaxAge())
-                    .build();
-            }
+        ResponseHandler responseHandler;
+        if (maxAgeControl != null) {
+            responseHandler = new CachePolicyResponseHandler(maxAgeControl);
+        } else {
+            responseHandler = new ResponseHandler();
         }
 
-        private static class NetworkMonitorRequestHandler extends RequestHandler {
-            private NetworkMonitor networkMonitor;
+        RequestHandler requestHandler;
+        if (networkMonitor != null) {
+            requestHandler = new NetworkMonitorRequestHandler(networkMonitor);
+        } else {
+            requestHandler = new RequestHandler();
+        }
 
-            private NetworkMonitorRequestHandler(NetworkMonitor networkMonitor) {
-                this.networkMonitor = networkMonitor;
-            }
+        Interceptor cacheControlInterceptor = getCacheControlInterceptor(
+                requestHandler, responseHandler);
 
-            @Override
-            public Request newRequest(Request request) {
-                Request.Builder newBuilder = request.newBuilder();
-                if (!networkMonitor.isOnline()) {
-                    // To be used with Application Interceptor to use Expired cache
-                    newBuilder.cacheControl(CacheControl.FORCE_CACHE);
-                }
-                return newBuilder.build();
+        okBuilder.addNetworkInterceptor(cacheControlInterceptor);
+
+        if (networkMonitor != null) {
+            okBuilder.addInterceptor(cacheControlInterceptor);
+        }
+
+        return okBuilder;
+    }
+
+    private static class StaticMaxAgeControl implements MaxAgeControl {
+        private TimeUnit maxAgeUnit;
+        private long maxAgeValue;
+
+        private StaticMaxAgeControl(long maxAgeValue, TimeUnit maxAgeUnit) {
+            this.maxAgeUnit = maxAgeUnit;
+            this.maxAgeValue = maxAgeValue;
+        }
+
+        @Override
+        public long getMaxAge() {
+            return maxAgeUnit.toSeconds(maxAgeValue);
+        }
+    }
+
+    private static class CachePolicyResponseHandler extends ResponseHandler {
+        private MaxAgeControl maxAgeControl;
+
+        private CachePolicyResponseHandler(MaxAgeControl maxAgeControl) {
+            this.maxAgeControl = maxAgeControl;
+        }
+
+        @Override
+        public Response newResponse(Response response) {
+            return response.newBuilder()
+                    .removeHeader("Pragma")
+                    .removeHeader("Cache-Control")
+                    .header("Cache-Control", "max-age=" + maxAgeControl.getMaxAge())
+                .build();
+        }
+    }
+
+    private static class NetworkMonitorRequestHandler extends RequestHandler {
+        private NetworkMonitor networkMonitor;
+
+        private NetworkMonitorRequestHandler(NetworkMonitor networkMonitor) {
+            this.networkMonitor = networkMonitor;
+        }
+
+        @Override
+        public Request newRequest(Request request) {
+            Request.Builder newBuilder = request.newBuilder();
+            if (!networkMonitor.isOnline()) {
+                // To be used with Application Interceptor to use Expired cache
+                newBuilder.cacheControl(CacheControl.FORCE_CACHE);
             }
+            return newBuilder.build();
         }
     }
 
