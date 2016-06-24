@@ -85,7 +85,7 @@ public class OkCacheControl {
             }
 
             if (maxAgeUnit != null) {
-                maxAgeControl = new StaticMaxAgeControl(maxAgeUnit, maxAgeValue);
+                maxAgeControl = new StaticMaxAgeControl(maxAgeValue, maxAgeUnit);
             }
 
             ResponseHandler responseHandler;
@@ -118,7 +118,7 @@ public class OkCacheControl {
             private TimeUnit maxAgeUnit;
             private long maxAgeValue;
 
-            private StaticMaxAgeControl(TimeUnit maxAgeUnit, long maxAgeValue) {
+            private StaticMaxAgeControl(long maxAgeValue, TimeUnit maxAgeUnit) {
                 this.maxAgeUnit = maxAgeUnit;
                 this.maxAgeValue = maxAgeValue;
             }

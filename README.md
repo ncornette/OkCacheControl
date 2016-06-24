@@ -1,4 +1,8 @@
 # OkCacheControl
+
+[![Build Status](https://travis-ci.org/ncornette/OkCacheControl.svg?branch=master)](https://travis-ci.org/ncornette/OkCacheControl)
+[![Bintray](https://img.shields.io/bintray/v/ncornette/maven/okcache-control.svg?maxAge=2592000)]()
+
 Helper class to configure cache behaviour of OkHttp client, also works 
 with Retrofit for Android.
 
