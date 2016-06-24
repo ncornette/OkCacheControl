@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/ncornette/OkCacheControl.svg?branch=master)](https://travis-ci.org/ncornette/OkCacheControl)
 [![Bintray](https://img.shields.io/bintray/v/ncornette/maven/okcache-control.svg?maxAge=2592000)]()
+[![codecov](https://codecov.io/gh/ncornette/OkCacheControl/branch/master/graph/badge.svg)](https://codecov.io/gh/ncornette/OkCacheControl)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b566a6e4564e4393b78b7b4b36a70452)](https://www.codacy.com/app/nicolas-cornette/OkCacheControl?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ncornette/OkCacheControl&amp;utm_campaign=Badge_Grade)
 
 Helper class to configure cache behaviour of OkHttp client, also works 
 with Retrofit for Android.
