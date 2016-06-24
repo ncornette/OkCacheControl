@@ -4,7 +4,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-
+apply plugin: 'jacoco'
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
@@ -39,6 +39,14 @@ bintray {
         version {
             name= "${POM_VERSION}"
         }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
     }
 }
 
