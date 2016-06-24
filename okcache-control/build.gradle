@@ -44,11 +44,12 @@ bintray {
 
 jacocoTestReport {
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
+        xml.enabled true
+        html.enabled true
     }
 }
+
+check.dependsOn jacocoTestReport
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
