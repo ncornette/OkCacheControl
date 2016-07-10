@@ -60,6 +60,14 @@ public class OkCacheControl {
         this.okBuilder = okBuilder;
     }
 
+    public OkCacheControl overrideServerCachePolicy(Long maxAgeSeconds) {
+        if (maxAgeSeconds == null) {
+            return this.overrideServerCachePolicy(0, null);
+        } else {
+            return this.overrideServerCachePolicy(maxAgeSeconds, TimeUnit.SECONDS);
+        }
+    }
+
     public OkCacheControl overrideServerCachePolicy(long timeValue, TimeUnit unit) {
         this.maxAgeControl = null;
         this.maxAgeValue = timeValue;

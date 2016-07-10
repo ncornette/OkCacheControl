@@ -63,6 +63,37 @@ public class BuilderTest {
         then(response.header("Cache-Control")).isEqualTo("max-age=300");
     }
 
+    @Test
+    public void testOverrideServerCachePolicy_LONG_NULL() throws Exception {
+        //given
+        OkHttpClient client = OkCacheControl.on(new OkHttpClient.Builder())
+                .overrideServerCachePolicy((Long)null)
+                .apply().build();
+
+        //when
+        mockWebServer.enqueue(new MockResponse().setBody("Response"));
+        Response response = getResponse(client);
+
+        //then
+        then(response.header("Cache-Control")).isNull();
+    }
+
+    @Test
+    public void testOverrideServerCachePolicy_LONG() throws Exception {
+        //given
+        OkHttpClient client = OkCacheControl.on(new OkHttpClient.Builder())
+                .overrideServerCachePolicy(TimeUnit.SECONDS.convert(5, TimeUnit.MINUTES))
+                .apply().build();
+
+        //when
+        mockWebServer.enqueue(new MockResponse().setBody("Response"));
+        Response response = getResponse(client);
+
+        //then
+        then(response.header("Cache-Control")).isEqualTo(
+                "max-age="+TimeUnit.SECONDS.convert(5, TimeUnit.MINUTES));
+    }
+
 
     @Test
     public void testOverrideServerCachePolicy_STATIC() throws Exception {
