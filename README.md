@@ -14,7 +14,7 @@ repositories {
     jcenter()
 }
 dependencies {
-    compile 'com.ncornette.cache:okcache-control:1.0.0'
+    compile 'com.ncornette.cache:okcache-control:1.1.1'
 }
 ```
 
