@@ -6,6 +6,9 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
 }
